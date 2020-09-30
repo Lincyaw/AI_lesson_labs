@@ -1,4 +1,2 @@
 # AI_lesson_labs
-HITSZ AI lab
-
-
+2020年哈尔滨工业大学（深圳）人工智能必修课实验。
