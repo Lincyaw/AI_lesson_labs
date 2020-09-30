@@ -1,40 +1,121 @@
-class Monkey:
-    def __init__(self, pos):
-        self.pos = pos
+"""
+Define state predicates as following:
+    Site(x,y): x is at y;
+    Hang(w,y): w is hanging on y;
+    On(z): z is standing on the box;
+    Holds(z): bananas are held by z;
+Define 4 operations:
+    Goto(u,v): monkey goes to v from u;
+    PushBox(v,w): monkey goes to w from v with boxes;
+    ClimeBox: monkey climbs up box;
+    Grasp: monkey gets the banana;
 
-    def determine(self, banana, box):
-        if self.pos[2] < banana[2]:
-            self.find_box(box, True)
-            self.find_box(banana, False)
-        else:
-            self.find_box(banana, False)
+Define initial state:
+    S_0 = Site(Monkey, a)
+        && Hang(banana, b)
+        && Site(Box, c)
+        && !On(Monkey)
+        && !Holds(Monkey)
 
-    def find_box(self, box, flag):
-        while box != self.pos:
-            temp = [box[0] - self.pos[0], box[1] - self.pos[1], box[2] - self.pos[2]]
-            if temp[0] != 0:
-                print("x + %d" % (temp[0] / abs(temp[0])))
-                self.pos[0] += temp[0] / abs(temp[0])
-            elif temp[1] != 0:
-                print("y + %d" % (temp[1] / abs(temp[1])))
-                self.pos[1] += temp[1] / abs(temp[1])
-            elif temp[2] != 0:
-                print("Can not reach.")
-        self.pos[2] += 1
-        if flag:
-            print("Find the box.")
+Define final state:
+    S_g = Site(Monkey, b)
+        && !Hang(banana, b)
+        && Site(Box, b)
+        && On(Monkey)
+        && Holds(Monkey)
+"""
+
+
+class monkey:
+    def __init__(self, site, On, Holds):
+        self.site = site
+        self.On = On
+        self.Holds = Holds
+        self.report()
+
+    def report(self):
+        print("Monkey is at", self.site)
+        if self.On:
+            print("Monkey is on the box.")
         else:
-            print("Find the banana.")
+            print("Monkey is not on the box.")
+        if self.Holds:
+            print("Monkey holds the banana. Congratulations! ")
+        else:
+            print("Monkey does not hold the banana.")
+        print(" ")
+
+
+
+class box:
+    def __init__(self, site):
+        self.site = site
+        self.report()
+
+    def report(self):
+        print("Box is at ", self.site)
+        print(" ")
+
+
+class banana:
+    def __init__(self, y):
+        self.hang = y
+        print("Banana is hanging on the" + y)
+        print(" ")
+
+
+
+def Goto(monkey, u, v):
+    print("|---------------------------------")
+    print("|Action GOTO:")
+    print("|        Monkey go to ", u, "from",v)
+    print("|---------------------------------")
+    if (~monkey.On) and (monkey.site == u):
+        monkey.site = v
+    monkey.report()
+
+
+def PushBox(monkey, box, v, w):
+    print("|---------------------------------")
+    print("|Action PushBox:")
+    print("|        Monkey go to", v, "from",w,"with box")
+    print("|---------------------------------")
+    if ~monkey.On and monkey.site == v and box.site == v:
+        monkey.site = w
+        box.site = w
+    monkey.report()
+    box.report()
+
+
+def ClimbBox(monkey, box):
+    print("|---------------------------------")
+    print("|Action ClimbBox:")
+    print("|        Monkey climbs up the box")
+    print("|---------------------------------")
+    if monkey.site == box.site and ~monkey.On:
+        monkey.On = True
+    monkey.report()
+    box.report()
+
+
+def Grasp(monkey, box, banana):
+    print("|---------------------------------")
+    print("|Action Grasp:")
+    print("|        Monkey gets the banana.")
+    print("|---------------------------------")
+    if monkey.On and box.site == banana.hang:
+        monkey.Holds = True
+        banana.hang = False
+    monkey.report()
 
 
 if __name__ == "__main__":
-    print("Please input coordinate as \"x y z\" forms.")
-    monkey_pos = input("Input monkey postion: ")
-    monkey_pos = [int(n) for n in monkey_pos.split()]
-    monkey = Monkey(monkey_pos)
-    banana = input("Input banana postion: ")  # [15, 4, 1]
-    banana = [int(n) for n in banana.split()]
-    box = input("Input box postion: ")  # [2, 4, 0]
-    box = [int(n) for n in box.split()]
+    print("Initial states:")
+    Monkey = monkey("a", False, False)
+    Box = box("c")
+    Banana = banana("b")
 
-    monkey.determine(banana, box)
+    Goto(Monkey, Monkey.site, Box.site)
+    PushBox(Monkey, Box, Box.site, Banana.hang)
+    ClimbBox(Monkey, Box)
+    Grasp(Monkey, Box, Banana)
