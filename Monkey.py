@@ -25,6 +25,7 @@ Define final state:
         && Holds(Monkey)
 """
 
+
 # Define the monkey class
 class monkey:
     def __init__(self, site, On, Holds):
@@ -54,6 +55,7 @@ class box:
     def report(self):
         print("Box is at ", self.site)
 
+
 # Define the banana class
 class banana:
     def __init__(self, y):
@@ -65,7 +67,7 @@ class banana:
 def Goto(monkey, u, v):
     print("|---------------------------------")
     print("|Action GOTO:")
-    print("|        Monkey go to ", u, "from",v)
+    print("|        Monkey go to ", v, "from", u)
     print("|---------------------------------")
     if (~monkey.On) and (monkey.site == u):
         monkey.site = v
@@ -73,11 +75,12 @@ def Goto(monkey, u, v):
     else:
         print("No effect.")
 
+
 # Monkey goes to v from w with box
 def PushBox(monkey, box, v, w):
     print("|---------------------------------")
     print("|Action PushBox:")
-    print("|        Monkey go to", v, "from",w,"with box")
+    print("|        Monkey go to", w, "from", v, "with box")
     print("|---------------------------------")
     if ~monkey.On and monkey.site == v and box.site == v:
         monkey.site = w
@@ -86,6 +89,7 @@ def PushBox(monkey, box, v, w):
         box.report()
     else:
         print("No effect.")
+
 
 # Monkey climbs up box
 def ClimbBox(monkey, box):
@@ -100,6 +104,7 @@ def ClimbBox(monkey, box):
     else:
         print("No effect.")
 
+
 # Monkey tris to get banana
 def Grasp(monkey, box, banana):
     print("|---------------------------------")
@@ -113,9 +118,7 @@ def Grasp(monkey, box, banana):
         print("No effect.")
 
 
-
-def determine(monkey, box, banana):
-    place = ["a","b","c"]
+def determine(monkey, box, banana, lace):
     flag = False
     for i in place:
         Goto(monkey, monkey.site, i)
@@ -124,13 +127,14 @@ def determine(monkey, box, banana):
         for j in place:
             tempMonkey1 = monkey
             tempBox1 = box
-            for k in place:
-                PushBox(monkey, box, j, k)
-                ClimbBox(monkey, box)
-                Grasp(monkey, box, banana)
-                if monkey.Holds and box.site == monkey.site:
-                    flag = True
-                    return flag
+
+            PushBox(monkey, box, monkey.site, j)
+            ClimbBox(monkey, box)
+            Grasp(monkey, box, banana)
+            if monkey.Holds and box.site == monkey.site and monkey.site == banana.hang:
+                flag = True
+                return flag
+
             monkey = tempMonkey1
             box = tempBox1
         monkey = tempMonkey
@@ -144,9 +148,5 @@ if __name__ == "__main__":
     Monkey = monkey("a", False, False)
     Box = box("c")
     Banana = banana("b")
-
-    # Goto(Monkey, Monkey.site, Box.site)
-    # PushBox(Monkey, Box, Box.site, Banana.hang)
-    # ClimbBox(Monkey, Box)
-    # Grasp(Monkey, Box, Banana)
-    determine(Monkey,Box,Banana)
+    place = ["a", "b", "c"]
+    determine(Monkey, Box, Banana)
