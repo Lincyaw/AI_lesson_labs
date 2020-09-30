@@ -25,7 +25,7 @@ Define final state:
         && Holds(Monkey)
 """
 
-
+# Define the monkey class
 class monkey:
     def __init__(self, site, On, Holds):
         self.site = site
@@ -43,10 +43,9 @@ class monkey:
             print("Monkey holds the banana. Congratulations! ")
         else:
             print("Monkey does not hold the banana.")
-        print(" ")
 
 
-
+# Define the box class
 class box:
     def __init__(self, site):
         self.site = site
@@ -54,17 +53,15 @@ class box:
 
     def report(self):
         print("Box is at ", self.site)
-        print(" ")
 
-
+# Define the banana class
 class banana:
     def __init__(self, y):
         self.hang = y
-        print("Banana is hanging on the" + y)
-        print(" ")
+        print("Banana is hanging on the " + y)
 
 
-
+# Monkey goes to u from v
 def Goto(monkey, u, v):
     print("|---------------------------------")
     print("|Action GOTO:")
@@ -72,9 +69,11 @@ def Goto(monkey, u, v):
     print("|---------------------------------")
     if (~monkey.On) and (monkey.site == u):
         monkey.site = v
-    monkey.report()
+        monkey.report()
+    else:
+        print("No effect.")
 
-
+# Monkey goes to v from w with box
 def PushBox(monkey, box, v, w):
     print("|---------------------------------")
     print("|Action PushBox:")
@@ -83,10 +82,12 @@ def PushBox(monkey, box, v, w):
     if ~monkey.On and monkey.site == v and box.site == v:
         monkey.site = w
         box.site = w
-    monkey.report()
-    box.report()
+        monkey.report()
+        box.report()
+    else:
+        print("No effect.")
 
-
+# Monkey climbs up box
 def ClimbBox(monkey, box):
     print("|---------------------------------")
     print("|Action ClimbBox:")
@@ -94,19 +95,48 @@ def ClimbBox(monkey, box):
     print("|---------------------------------")
     if monkey.site == box.site and ~monkey.On:
         monkey.On = True
-    monkey.report()
-    box.report()
+        monkey.report()
+        box.report()
+    else:
+        print("No effect.")
 
-
+# Monkey tris to get banana
 def Grasp(monkey, box, banana):
     print("|---------------------------------")
     print("|Action Grasp:")
-    print("|        Monkey gets the banana.")
+    print("|        Monkey tris to get the banana.")
     print("|---------------------------------")
     if monkey.On and box.site == banana.hang:
         monkey.Holds = True
-        banana.hang = False
-    monkey.report()
+        monkey.report()
+    else:
+        print("No effect.")
+
+
+
+def determine(monkey, box, banana):
+    place = ["a","b","c"]
+    flag = False
+    for i in place:
+        Goto(monkey, monkey.site, i)
+        tempMonkey = monkey
+        tempBox = box
+        for j in place:
+            tempMonkey1 = monkey
+            tempBox1 = box
+            for k in place:
+                PushBox(monkey, box, j, k)
+                ClimbBox(monkey, box)
+                Grasp(monkey, box, banana)
+                if monkey.Holds and box.site == monkey.site:
+                    flag = True
+                    return flag
+            monkey = tempMonkey1
+            box = tempBox1
+        monkey = tempMonkey
+        box = tempBox
+    if not flag:
+        print("No solution.")
 
 
 if __name__ == "__main__":
@@ -115,7 +145,8 @@ if __name__ == "__main__":
     Box = box("c")
     Banana = banana("b")
 
-    Goto(Monkey, Monkey.site, Box.site)
-    PushBox(Monkey, Box, Box.site, Banana.hang)
-    ClimbBox(Monkey, Box)
-    Grasp(Monkey, Box, Banana)
+    # Goto(Monkey, Monkey.site, Box.site)
+    # PushBox(Monkey, Box, Box.site, Banana.hang)
+    # ClimbBox(Monkey, Box)
+    # Grasp(Monkey, Box, Banana)
+    determine(Monkey,Box,Banana)
