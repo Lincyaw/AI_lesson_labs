@@ -20,6 +20,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -71,74 +72,77 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
-	s = problem.getStartState()		#初始节点
-	closed = []		#建立一个closed表，置为空
-	open = util.Stack()		
-	open.push((s,[]))	#将初始节点放入open表（栈）
-	while not open.isEmpty():	#检查open表是否空
-		cnode,action = open.pop()
-		if problem.isGoalState(cnode):		#到达目标节点，退出
-			return action
-		if cnode not in closed:
-			closed.append(cnode)
-			successor = problem.getSuccessors(cnode)	#将子节点放入open表
-			for location,direction,cost in successor:
-				if(location not in closed):
-					open.push((location,action+[direction]))
-	"*** YOUR CODE HERE ***"
-	util.raiseNotDefined()
+    s = problem.getStartState()  # 初始节点
+    closed = []  # 建立一个closed表，置为空
+    open = util.Stack()
+    open.push((s, []))  # 将初始节点放入open表（栈）
+    while not open.isEmpty():  # 检查open表是否空
+        cnode, action = open.pop()
+        if problem.isGoalState(cnode):  # 到达目标节点，退出
+            return action
+        if cnode not in closed:
+            closed.append(cnode)
+            successor = problem.getSuccessors(cnode)  # 将子节点放入open表
+            for location, direction, cost in successor:
+                if (location not in closed):
+                    open.push((location, action + [direction]))
+    "*** YOUR CODE HERE ***"
+    util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
-	"""Search the shallowest nodes in the search tree first."""
-	"*** YOUR CODE HERE ***"
-	s = problem.getStartState()		#初始节点
-	closed = []		#标记已经遍历过的节点，置为空
-	q = util.Queue()	#建立队列来保存拓展到的各节点
-	q.push((s,[]))
-	while not q.isEmpty():
-		state,path = q.pop()
-		if problem.isGoalState(state):	#如果是目标状态，则返回当前路径，退出函数
-			return path
-		if state not in closed:	
-			closed.append(state)	#标记其为已经遍历过的状态
-			for node in problem.getSuccessors(state):
-				n_state = node[0]
-				direction = node[1]
-				if n_state not in closed:	#如果后继状态未被遍历过，将其入队列
-					q.push((n_state, path + [direction]))
-	return path
+    """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
+    s = problem.getStartState()  # 初始节点
+    closed = []  # 标记已经遍历过的节点，置为空
+    q = util.Queue()  # 建立队列来保存拓展到的各节点
+    q.push((s, []))
+    while not q.isEmpty():
+        state, path = q.pop()
+        if problem.isGoalState(state):  # 如果是目标状态，则返回当前路径，退出函数
+            return path
+        if state not in closed:
+            closed.append(state)  # 标记其为已经遍历过的状态
+            for node in problem.getSuccessors(state):
+                n_state = node[0]
+                direction = node[1]
+                if n_state not in closed:  # 如果后继状态未被遍历过，将其入队列
+                    q.push((n_state, path + [direction]))
+    return path
 
-def uniformCostSearch(problem):
+f uniformCostSearch(problem):
     """Search the node of least total cost first."""
-	#初始状态
-    start = problem.getStartState() 
-	#标记已经搜索过的状态集合exstates
-    exstates = [] 
-	#用优先队列PriorityQueue实现ucs
-    states = util.PriorityQueue() 
-    states.push((start,[]),0)
+    # 初始状态
+    start = problem.getStartState()
+    # 标记已经搜索过的状态集合exstates
+    exstates = []
+    # 用优先队列PriorityQueue实现ucs
+    states = util.PriorityQueue()
+    states.push((start, []), 0)
     while not states.isEmpty():
-        state,actions = states.pop()
-		#目标测试
+        state, actions = states.pop()
+        # 目标测试
         if problem.isGoalState(state):
             return actions
-		#检查重复
+        # 检查重复
         if state not in exstates:
-			#拓展
+            # 拓展
             successors = problem.getSuccessors(state)
             for node in successors:
                 coordinate = node[0]
                 direction = node[1]
                 if coordinate not in exstates:
                     newActions = actions + [direction]
-					#ucs比bfs的区别在于getCostOfActions决定节点拓展的优先级
-                    states.push((coordinate,actions + [direction]),problem.getCostOfActions(newActions))
+                    # ucs比bfs的区别在于getCostOfActions决定节点拓展的优先级
+                    states.push((coordinate, actions + [direction]), problem.getCostOfActions(newActions))
         exstates.append(state)
-    return  actions
+    return actions
     util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -147,29 +151,30 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    start = problem.getStartState()    #初始状态
-    exstates = [] 		#是否访问过该节点，初始为空
+    start = problem.getStartState()  # 初始状态
+    exstates = []  # 是否访问过该节点，初始为空
     states = util.PriorityQueue()
-    states.push((start,[]),nullHeuristic(start,problem))		#初始节点入栈
+    states.push((start, []), nullHeuristic(start, problem))  # 初始节点入栈
     nCost = 0
     while not states.isEmpty():
-        state,actions = states.pop()
-        if problem.isGoalState(state):		#到达目标节点，退出
+        state, actions = states.pop()
+        if problem.isGoalState(state):  # 到达目标节点，退出
             return actions
         if state not in exstates:
-            successors = problem.getSuccessors(state)		#查找子节点
+            successors = problem.getSuccessors(state)  # 查找子节点
             for node in successors:
                 coordinate = node[0]
                 direction = node[1]
                 if coordinate not in exstates:
                     newActions = actions + [direction]
-                    newCost = problem.getCostOfActions(newActions) + heuristic(coordinate,problem)
-                    states.push((coordinate,actions + [direction]),newCost)
+                    newCost = problem.getCostOfActions(newActions) + heuristic(coordinate, problem)
+                    states.push((coordinate, actions + [direction]), newCost)
         exstates.append(state)
-    return  actions
+    return actions
     util.raiseNotDefined()
 
 

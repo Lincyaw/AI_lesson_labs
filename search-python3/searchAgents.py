@@ -230,7 +230,7 @@ class StayEastSearchAgent(SearchAgent):
     """
     An agent for position search with a cost function that penalizes being in
     positions on the West side of the board.
-
+    一个寻找位置的代理，其成本函数是惩罚在棋盘西侧的位置。
     The cost function for stepping into a position (x,y) is 1/2^x.
     """
     def __init__(self):
@@ -242,7 +242,7 @@ class StayWestSearchAgent(SearchAgent):
     """
     An agent for position search with a cost function that penalizes being in
     positions on the East side of the board.
-
+    一个寻找位置的代理，其成本函数是惩罚在棋盘东侧的位置。
     The cost function for stepping into a position (x,y) is 2^x.
     """
     def __init__(self):
@@ -485,6 +485,8 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
+        # return search.aStarSearch(problem)  # 调用A*算法，寻找最短路径
+        return search.ucs(problem)
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -521,7 +523,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        foodGrid = self.food  # 找到食物所在位置
+        if (foodGrid[x][y] == True) or (foodGrid.count() == 0):  # 判断该点是否有食物
+            return True
+        # return self.food[x][y]
+        # util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):
     """
