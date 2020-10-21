@@ -392,7 +392,7 @@ class CornerProblemTest(testClasses.TestCase):
         gameState = pacman.GameState()
         gameState.initialize(lay, 0)
         problem = searchAgents.CornersProblem(gameState)
-        path = search.bfs(problem)
+        path = search.astar(problem)
 
         gameState = pacman.GameState()
         gameState.initialize(lay, 0)

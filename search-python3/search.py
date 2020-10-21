@@ -75,28 +75,13 @@ def tinyMazeSearch(problem):
 
 
 def depthFirstSearch(problem: SearchProblem):
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    """
-    "*** YOUR CODE HERE ***"
     initState = (problem.getStartState(), "None")
     invalidNode = None
 
     path = util.Stack()
     visited = util.Counter()
     stack = util.Stack()
-
-    visited[initState[0]] = 1
+    
     stack.push(initState)
 
     while not stack.isEmpty():
@@ -110,8 +95,14 @@ def depthFirstSearch(problem: SearchProblem):
             path.pop()
             continue
 
-        path.push(curr)
+        # 节点被访问过，跳过
+        if visited[curr[0]] == 1:
+            continue
 
+        # 标记节点被访问过
+        visited[curr[0]] = 1
+
+        path.push(curr)
         if problem.isGoalState(curr[0]):
             # 该节点为最终节点，结束循环
             break
@@ -119,14 +110,11 @@ def depthFirstSearch(problem: SearchProblem):
             # 当前节点不是最终节点
             # 对当前节点进行扩展获得其子节点
             nexts = problem.getSuccessors(curr[0])
-
             # 节点被扩展，层数增加，推入一个invalid节点用于标记
             stack.push(invalidNode)
-
             # 选取未出现过的状态节点加入到队列中
             for node in nexts:
                 if visited[node[0]] == 0:
-                    visited[node[0]] = 1
                     stack.push((node[0], node[1]))
 
     result = []
@@ -137,6 +125,7 @@ def depthFirstSearch(problem: SearchProblem):
         result.pop(0)
 
     return result
+
 
 
 def breadthFirstSearch(problem):
@@ -203,11 +192,17 @@ def uniformCostSearch(problem):
     # 'action is how previous node goes to current node,
     # 'preNode' is the previous node
     queue.push((initState, "None", 0, None))
-    visited[initState] = 1
 
     lastNode = None
     while not queue.isEmpty():
         curr = queue.pop()
+
+        # 节点被访问过，跳过
+        if visited[curr[0]] == 1:
+            continue
+
+        # 标记节点被访问过
+        visited[curr[0]] = 1
 
         if problem.isGoalState(curr[STATE]):
             lastNode = curr
@@ -217,8 +212,7 @@ def uniformCostSearch(problem):
             for node in nexts:
                 if visited[node[0]] == 0:
                     # 未访问过
-                    visited[node[0]] = 1
-                    queue.push((node[0], node[1], node[2], curr))
+                    queue.push((node[0], node[1], curr[COST] + node[2], curr))
 
     result = []
     if lastNode is not None:
@@ -228,6 +222,7 @@ def uniformCostSearch(problem):
 
     result.reverse()
     return result
+
 
 
 def nullHeuristic(state, problem=None):
@@ -241,27 +236,26 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    start = problem.getStartState()    #初始状态
-    exstates = [] 		#是否访问过该节点，初始为空
-    states = util.PriorityQueue()
-    states.push((start,[]),nullHeuristic(start,problem))		#初始节点入栈
-    nCost = 0
-    while not states.isEmpty():
-        state,actions = states.pop()
-        if problem.isGoalState(state):		#到达目标节点，退出
-            return actions
-        if state not in exstates:
-            successors = problem.getSuccessors(state)		#查找子节点
-            for node in successors:
-                coordinate = node[0]
-                direction = node[1]
-                if coordinate not in exstates:
-                    newActions = actions + [direction]
-                    newCost = problem.getCostOfActions(newActions) + heuristic(coordinate,problem)
-                    states.push((coordinate,actions + [direction]),newCost)
-        exstates.append(state)
-    return  actions
-    util.raiseNotDefined()
+    path = []
+    closeSet = []
+    parent = {}
+    startState = problem.getStartState()
+    openSet= util.PriorityQueue()
+    openSet.push((startState, path), 0)
+    while not openSet.isEmpty():
+        state = openSet.pop()
+        if problem.isGoalState(state[0]):
+            return state[1]
+        if state[0] not in closeSet:
+            closeSet.append(state[0])
+            successors = problem.getSuccessors(state[0])
+            for successor, direction, cost in successors:
+                tempActions = state[1] + [direction]
+                if successor not in closeSet:
+                    openSet.push((successor, tempActions),
+                                 problem.getCostOfActions(tempActions) + heuristic(successor, problem))
+    return []
+
 
 
 # Abbreviations
