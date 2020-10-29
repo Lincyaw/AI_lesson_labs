@@ -129,49 +129,24 @@ def depthFirstSearch(problem: SearchProblem):
 
 
 def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    from game import Directions
-    STATE = 0
-    ACTION = 1
-    PRE_STATE = 2
-
-    initState = problem.getStartState()
-
-    queue = util.Queue()
-    visited = util.Counter()
-
-    # Every node is a triple, (nodeState, action, preNode) where
-    # 'nodeState' is the state for current node,
-    # 'action is how previous node goes to current node,
-    # 'preNode' is the previous node
-    queue.push((initState, "None", None))
-    visited[initState] = 1
-
-    lastNode = None
-    while not queue.isEmpty():
-        curr = queue.pop()
-
-        if problem.isGoalState(curr[STATE]):
-            lastNode = curr
-            break
-        else:
-            nexts = problem.getSuccessors(curr[STATE])
-            for node in nexts:
-                if visited[node[0]] == 0:
-                    # 未访问过
-                    visited[node[0]] = 1
-                    queue.push((node[0], node[1], curr))
-
-    result = []
-    if lastNode is not None:
-        while lastNode[PRE_STATE] is not None:
-            result.append(lastNode[ACTION])
-            lastNode = lastNode[PRE_STATE]
-
-    result.reverse()
-    return result
-
+	"""Search the shallowest nodes in the search tree first."""
+	"*** YOUR CODE HERE ***"
+	s = problem.getStartState()		#初始节点
+	closed = []		#标记已经遍历过的节点，置为空
+	q = util.Queue()	#建立队列来保存拓展到的各节点
+	q.push((s,[]))
+	while not q.isEmpty():
+		state,path = q.pop()
+		if problem.isGoalState(state):	#如果是目标状态，则返回当前路径，退出函数
+			return path
+		if state not in closed:
+			closed.append(state)	#标记其为已经遍历过的状态
+			for node in problem.getSuccessors(state):
+				n_state = node[0]
+				direction = node[1]
+				if n_state not in closed:	#如果后继状态未被遍历过，将其入队列
+					q.push((n_state, path + [direction]))
+	return path
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
